@@ -1,0 +1,100 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>React </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+	<script src="./ReactScriptLoader.js"></script>
+	<style>
+	  .commentBox{
+		border:1px solid red;
+	  }
+	</style>
+  </head>
+  <body>
+    <div id="container"></div>
+   
+    <script type="text/babel">
+		var CommentForm = React.createClass({
+		  componentDidMount: function(){
+		 
+		  },
+		  render: function() {
+			return (
+			  <div className="commentForm">
+				I am a CommentForm.<br/>
+				<Foo />
+			  </div>
+			);
+		  }
+		});
+		var Foo = React.createClass({
+			mixins: [ReactScriptLoaderMixin],
+			 
+			getInitialState: function() {
+				return {
+					scriptLoading: true,
+					scriptLoadError: false,
+					componentRuntimeLoader: false,
+				};
+			},
+			
+		    componentDidMount: function() {
+			  console.log("componentDidMount",this.state.componentRuntimeLoader);
+			  this.state.componentRuntimeLoader = true;
+			   
+			},
+			
+			// this function tells ReactScriptLoaderMixin where to load the script from
+			getScriptURL: function() {
+				console.log("getScriptURL")
+			  return './imgJS.js';
+			},
+
+			// ReactScriptLoaderMixin calls this function when the script has loaded
+			// successfully.
+			onScriptLoaded: function() {
+				console.log("onScriptLoaded");
+				this.setState({scriptLoading: false});
+			},
+
+			// ReactScriptLoaderMixin calls this function when the script has failed to load.
+			onScriptError: function() {
+				console.log("onScriptError");
+				this.setState({scriptLoading: false, scriptLoadError: true});
+			},
+
+			render: function() {
+				var message;
+				if (this.state.scriptLoading) {					
+					message = 'loading script...';
+				} else if (this.state.scriptLoadError) {
+					message = 'loading failed';
+				} else {
+					message = 'loading succeeded';
+				}
+				
+				if (this.state.componentRuntimeLoader) {
+					console.log("componentRuntimeLoader");
+					return <span><Hello /> <br /> {message}</span>;
+				} else {
+					console.log("no ------ componentRuntimeLoader");
+					return <span>{message}</span>;
+				}
+				
+				
+			}
+		});
+      
+		ReactDOM.render(
+		  <CommentForm />,
+		  document.getElementById('container')
+		);
+    </script>
+  </body>
+</html>
